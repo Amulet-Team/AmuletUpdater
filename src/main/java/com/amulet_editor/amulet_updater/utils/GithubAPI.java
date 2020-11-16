@@ -1,16 +1,12 @@
 package com.amulet_editor.amulet_updater.utils;
 
-import com.amulet_editor.amulet_updater.ReleaseVersion;
 import com.jcabi.github.*;
 
 import java.io.IOException;
 
 public class GithubAPI {
 
-    private static String GITHUB_API_ENDPOINT = "";
-    private static String queryString = "";
-
-    public static ReleaseVersion getLatestRelease() {
+    public static String getLatestRelease() {
         try {
             Github github = new RtGithub();
             Repo repo = github.repos().get(
@@ -31,10 +27,8 @@ public class GithubAPI {
                     System.out.println(smartAsset.name());
                 }
             }
-        } catch (IOException ioe) {
+        } catch (IOException | AssertionError ioe) {
             ioe.printStackTrace();
-        } catch (AssertionError ae) {
-            ae.printStackTrace();
         }
         return null;
     }

@@ -1,6 +1,5 @@
 package com.amulet_editor.amulet_updater.tasks;
 
-import com.amulet_editor.amulet_updater.ReleaseVersion;
 import com.amulet_editor.amulet_updater.utils.Constants;
 import com.amulet_editor.amulet_updater.utils.FileUtilities;
 import net.lingala.zip4j.ZipFile;
@@ -44,10 +43,10 @@ public class BackupTask extends AbstractTask {
     @Override
     public boolean runTask(String[] args, Map<String, Object> environment) {
         File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
-        ReleaseVersion currentVersion = (ReleaseVersion) environment.get(Constants.CURRENT_VERSION);
+        String currentVersion = (String) environment.get(Constants.CURRENT_VERSION);
 
         Path backupsPath = Paths.get(workingDirectory.getAbsolutePath(), "backups");
-        Path backupPath = Paths.get(backupsPath.toString(), "backup_" + currentVersion.getVersion());
+        Path backupPath = Paths.get(backupsPath.toString(), "backup_" + currentVersion);
         try {
             Files.createDirectories(backupPath);
             BackupFileFilter filter = new BackupFileFilter();
@@ -64,7 +63,7 @@ public class BackupTask extends AbstractTask {
             ZipParameters params = new ZipParameters();
             params.setCompressionMethod(CompressionMethod.STORE);
 
-            ZipFile backupZip = new ZipFile(Paths.get(backupsPath.toString(), "backup_" + currentVersion.getVersion() + ".zip").toFile());
+            ZipFile backupZip = new ZipFile(Paths.get(backupsPath.toString(), "backup_" + currentVersion + ".zip").toFile());
             if (!backupZip.getFile().exists()) {
                 backupZip.addFolder(backupPath.toFile(), params);
             } else {

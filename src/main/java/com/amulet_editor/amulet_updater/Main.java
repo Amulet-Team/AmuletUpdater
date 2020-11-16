@@ -1,7 +1,9 @@
 package com.amulet_editor.amulet_updater;
 
 import com.amulet_editor.amulet_updater.tasks.*;
+import com.amulet_editor.amulet_updater.ui.UpdateUI;
 import com.amulet_editor.amulet_updater.utils.Constants;
+import com.amulet_editor.amulet_updater.utils.GithubAPI;
 import com.jezhumble.javasysmon.JavaSysMon;
 import org.apache.commons.cli.*;
 
@@ -66,10 +68,19 @@ public class Main {
             return;
         }
 
+        if (targetVersion.equalsIgnoreCase("latest")) {
+            String version = GithubAPI.getLatestRelease();
+            if (version == null) {
+                // Error
+                return;
+            }
+            targetVersion = version;
+        }
+
         Map<String, Object> environment = new HashMap<>();
         environment.put(Constants.WORKING_DIRECTORY, new File(workingDirectory));
-        environment.put(Constants.CURRENT_VERSION, new ReleaseVersion(currentVersion));
-        environment.put(Constants.TARGET_VERSION, new ReleaseVersion(targetVersion));
+        environment.put(Constants.CURRENT_VERSION, currentVersion);
+        environment.put(Constants.TARGET_VERSION, targetVersion);
 
         if (sPid != null) {
             int pid = Integer.parseInt(sPid);
@@ -77,14 +88,18 @@ public class Main {
             SYS_MON.killProcess(pid);
         }
 
+        UpdateUI ui = new UpdateUI(currentVersion, targetVersion, defaultUpdateProcess.length);
+
         for (String cmd : defaultUpdateProcess) {
             String[] cmdArgs = cmd.split(" ");
             try {
                 Class<? extends AbstractTask> targetClass = taskClasses.get(cmdArgs[0]);
                 if (targetClass != null) {
                     AbstractTask task = targetClass.getConstructor().newInstance();
+                    ui.updateStep(task.getTaskID());
                     System.out.print(task.getTaskID() + "(" + Arrays.toString(cmdArgs) + ")");
                     System.out.println(" => " + task.runTask(cmdArgs, environment));
+                    ui.incrementStep();
                 } else {
                     System.err.println("Couldn't find class for task \"" + cmdArgs[0] + "\"");
                 }
@@ -94,6 +109,7 @@ public class Main {
         }
 
         if (environment.containsKey("amulet_thread")) {
+            ui.close();
             Thread t = (Thread) environment.get("amulet_thread");
             try {
                 t.join();
