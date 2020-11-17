@@ -2,8 +2,10 @@ package com.amulet_editor.amulet_updater.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class UpdateUI {
+public class UpdateUI implements ActionListener {
 
     private final JFrame frame;
     private final JProgressBar overallProgressBar;
@@ -16,7 +18,7 @@ public class UpdateUI {
             e.printStackTrace();
         }
         this.frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
 
@@ -57,13 +59,24 @@ public class UpdateUI {
         progressBarPanel.setLayout(new GridLayout(2,2, 0, 5));
         // End Progress Bar Panel
 
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelButton.addActionListener(this);
+
 
         mainPanel.add(labelPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(progressBarPanel);
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(cancelButton);
 
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        frame.add(mainPanel);
+        frame.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
+        frame.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
+        frame.add(Box.createHorizontalStrut(10), BorderLayout.EAST);
+        frame.add(Box.createHorizontalStrut(10), BorderLayout.WEST);
+        frame.add(mainPanel, BorderLayout.CENTER);
         frame.pack();
 
         frame.setVisible(true);
@@ -81,5 +94,10 @@ public class UpdateUI {
     public void close() {
         frame.setVisible(false);
         frame.dispose();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.exit(0);
     }
 }
