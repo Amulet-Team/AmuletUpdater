@@ -42,21 +42,21 @@ public class Main {
 
         options.addOption("wd", true, "The desired working directory");
         options.addOption("pid", true, "The PID to kill");
-        options.addOption("target_version", true, "The version");
+        options.addOption("install_beta", "Switch to install the beta version");
         options.addOption("current_version", true, "The currently installed version");
 
         CommandLineParser parser = new DefaultParser();
 
         String workingDirectory = null;
         String currentVersion = null;
-        String targetVersion = null;
+        boolean installBeta = false;
         String sPid = null;
 
         try {
             CommandLine cli = parser.parse(options, args);
             workingDirectory = cli.getOptionValue("wd");
             currentVersion = cli.getOptionValue("current_version");
-            targetVersion = cli.getOptionValue("target_version", "latest");
+            installBeta = cli.hasOption("install_beta");
             if (cli.hasOption("pid")) {
                 sPid = cli.getOptionValue("pid");
             }
@@ -68,19 +68,17 @@ public class Main {
             return;
         }
 
-        if (targetVersion.equalsIgnoreCase("latest")) {
-            String version = GithubAPI.getLatestRelease();
-            if (version == null) {
-                // Error
-                return;
-            }
-            targetVersion = version;
-        }
-
         Map<String, Object> environment = new HashMap<>();
         environment.put(Constants.WORKING_DIRECTORY, new File(workingDirectory));
         environment.put(Constants.CURRENT_VERSION, currentVersion);
-        environment.put(Constants.TARGET_VERSION, targetVersion);
+
+        GithubAPI.ReleaseInfo releaseInfo = GithubAPI.getLatestRelease(installBeta);
+        if (releaseInfo == null) {
+            // Error
+            return;
+        }
+
+        environment.put(Constants.TARGET_VERSION_INFO, releaseInfo);
 
         if (sPid != null) {
             int pid = Integer.parseInt(sPid);
@@ -88,7 +86,7 @@ public class Main {
             SYS_MON.killProcess(pid);
         }
 
-        UpdateUI ui = new UpdateUI(currentVersion, targetVersion, defaultUpdateProcess.length);
+        UpdateUI ui = new UpdateUI(currentVersion, releaseInfo.releaseVersion, defaultUpdateProcess.length);
 
         for (String cmd : defaultUpdateProcess) {
             String[] cmdArgs = cmd.split(" ");
@@ -117,12 +115,5 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        /*
-        //GithubAPI.getLatestRelease();
-        //ITask task = new DownloadTask();
-        //task.runTask();
-        ITask backupTask = new BackupTask();
-        backupTask.runTask(new String[0], environment);
-         */
     }
 }

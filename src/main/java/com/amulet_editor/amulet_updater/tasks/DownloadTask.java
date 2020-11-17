@@ -1,6 +1,7 @@
 package com.amulet_editor.amulet_updater.tasks;
 
 import com.amulet_editor.amulet_updater.utils.Constants;
+import com.amulet_editor.amulet_updater.utils.GithubAPI;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -22,9 +23,9 @@ public class DownloadTask extends AbstractTask {
 
     @Override
     public boolean runTask(String[] args, Map<String, Object> environment) {
-        String target = (String) environment.get(Constants.TARGET_VERSION);
+        GithubAPI.ReleaseInfo target = (GithubAPI.ReleaseInfo) environment.get(Constants.TARGET_VERSION_INFO);
         try {
-            URL url = new URL("https://github.com/Amulet-Team/Amulet-Map-Editor/releases/download/v"+ target + "/Amulet-v0.7.2.4-windows.zip");
+            URL url = target.parseUrl(target.getReleaseAsset());
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
             FileOutputStream fos = new FileOutputStream("update.zip");
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
