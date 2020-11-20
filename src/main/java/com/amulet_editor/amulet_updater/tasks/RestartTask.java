@@ -35,7 +35,7 @@ public class RestartTask extends AbstractTask {
         Thread t = new Thread(new AmuletRunnable(amuletPath));
         t.start();
         environment.put("amulet_thread", t);
-        return false;
+        return true;
     }
 
     @Override

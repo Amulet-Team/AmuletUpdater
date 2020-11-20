@@ -12,13 +12,16 @@ public class CleanTask extends AbstractTask {
     @Override
     public boolean runTask(String[] args, Map<String, Object> environment) {
         File currentBackupPath = (File) environment.get(Constants.CURRENT_BACKUP_PATH);
+        File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
 
         try {
             FileUtils.deleteDirectory(currentBackupPath);
         } catch (IOException e) {
             e.printStackTrace();
+            this.reportError(e, workingDirectory);
+            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

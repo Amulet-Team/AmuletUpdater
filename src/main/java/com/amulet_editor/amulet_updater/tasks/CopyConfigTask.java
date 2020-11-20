@@ -21,12 +21,13 @@ public class CopyConfigTask extends AbstractTask {
     public boolean runTask(String[] args, Map<String, Object> environment) {
         File currentBackupPath = (File) environment.get(Constants.CURRENT_BACKUP_PATH);
         File latestPath = (File) environment.get(Constants.LATEST_PATH);
+        File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
 
         Path sourceConfigPath = Paths.get(currentBackupPath.toString(), args[1]);
         Path destConfigPath = Paths.get(latestPath.toString(), args[2]);
 
         if (!sourceConfigPath.toFile().exists()) {
-            return true;
+            return false;
         }
 
         try {
@@ -34,8 +35,10 @@ public class CopyConfigTask extends AbstractTask {
             FileUtils.copyDirectory(sourceConfigPath.toFile(), destConfigPath.toFile());
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            this.reportError(ioe, workingDirectory);
+            return false;
         }
 
-        return false;
+        return true;
     }
 }

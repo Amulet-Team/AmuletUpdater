@@ -7,11 +7,14 @@ import java.awt.event.ActionListener;
 
 public class UpdateUI implements ActionListener {
 
+    private static UpdateUI instance = null;
+
     private final JFrame frame;
     private final JProgressBar overallProgressBar;
     private final JProgressBar stepProgressBar;
 
     public UpdateUI(String currentVer, String newVer, int stepsLen) {
+        instance = this;
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -19,6 +22,7 @@ public class UpdateUI implements ActionListener {
         }
         this.frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Amulet Updater");
 
         JPanel mainPanel = new JPanel();
 
@@ -94,10 +98,18 @@ public class UpdateUI implements ActionListener {
     public void close() {
         frame.setVisible(false);
         frame.dispose();
+        instance = null;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         System.exit(0);
+    }
+
+    public static Component getInstanceComponent() {
+        if (instance == null) {
+            return null;
+        }
+        return instance.frame;
     }
 }

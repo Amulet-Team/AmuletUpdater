@@ -58,6 +58,8 @@ public class BackupTask extends AbstractTask {
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
+                this.reportError(ioe, workingDirectory);
+                return false;
             }
 
             ZipParameters params = new ZipParameters();
@@ -71,11 +73,13 @@ public class BackupTask extends AbstractTask {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            this.reportError(e, workingDirectory);
+            return false;
         }
 
         environment.put(Constants.CURRENT_BACKUP_PATH, backupPath.toFile());
 
-        return false;
+        return true;
     }
 
 

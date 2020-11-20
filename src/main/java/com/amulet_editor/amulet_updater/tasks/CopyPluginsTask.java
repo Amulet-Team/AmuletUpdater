@@ -16,12 +16,13 @@ public class CopyPluginsTask extends AbstractTask {
     public boolean runTask(String[] args, Map<String, Object> environment) {
         File currentBackupPth = (File) environment.get(Constants.CURRENT_BACKUP_PATH);
         File latestPath = (File) environment.get(Constants.LATEST_PATH);
+        File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
 
         Path sourcePluginPath = Paths.get(currentBackupPth.toString(), args[1]);
         Path destPluginPath = Paths.get(latestPath.toString(), args[2]);
 
         if (!sourcePluginPath.toFile().exists()) {
-            return true;
+            return false;
         }
 
         try {
@@ -29,8 +30,10 @@ public class CopyPluginsTask extends AbstractTask {
             FileUtils.copyDirectory(sourcePluginPath.toFile(), destPluginPath.toFile());
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            this.reportError(ioe, workingDirectory);
+            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

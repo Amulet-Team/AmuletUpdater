@@ -24,6 +24,8 @@ public class DownloadTask extends AbstractTask {
     @Override
     public boolean runTask(String[] args, Map<String, Object> environment) {
         GithubAPI.ReleaseInfo target = (GithubAPI.ReleaseInfo) environment.get(Constants.TARGET_VERSION_INFO);
+        File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
+
         try {
             URL url = target.parseUrl(target.getReleaseAsset());
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
@@ -34,9 +36,10 @@ public class DownloadTask extends AbstractTask {
 
         } catch (IOException mue) {
             mue.printStackTrace();
+            this.reportError(mue, workingDirectory);
+            return false;
         }
 
-        File workingDirectory = (File) environment.get(Constants.WORKING_DIRECTORY);
         File tempDir = Paths.get(workingDirectory.getAbsolutePath(), "tmp").toFile();
 
         ZipFile newReleaseZip = new ZipFile("update.zip");
@@ -46,6 +49,7 @@ public class DownloadTask extends AbstractTask {
             return true;
         } catch (ZipException e) {
             e.printStackTrace();
+            this.reportError(e, workingDirectory);
         }
         return false;
     }

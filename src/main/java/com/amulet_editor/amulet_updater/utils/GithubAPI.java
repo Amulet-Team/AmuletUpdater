@@ -1,8 +1,10 @@
 package com.amulet_editor.amulet_updater.utils;
 
+import com.amulet_editor.amulet_updater.ui.UpdateUI;
 import com.jcabi.github.*;
 import org.apache.commons.lang3.SystemUtils;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,6 +49,7 @@ public class GithubAPI {
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
+                JOptionPane.showMessageDialog(UpdateUI.getInstanceComponent(), "Couldn't find release asset for " + this.releaseVersion, "An Error has Occured", JOptionPane.ERROR_MESSAGE);
             }
 
             return null;

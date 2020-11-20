@@ -18,8 +18,10 @@ public class FinishInstallTask extends AbstractTask {
             FileUtils.copyDirectory(latestPath, workingDirectory);
         } catch (IOException e) {
             e.printStackTrace();
+            this.reportError(e, workingDirectory);
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override

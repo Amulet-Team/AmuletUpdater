@@ -7,6 +7,7 @@ import com.amulet_editor.amulet_updater.utils.GithubAPI;
 import com.jezhumble.javasysmon.JavaSysMon;
 import org.apache.commons.cli.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class Main {
 
         GithubAPI.ReleaseInfo releaseInfo = GithubAPI.getLatestRelease(installBeta);
         if (releaseInfo == null) {
-            // Error
+            JOptionPane.showMessageDialog(UpdateUI.getInstanceComponent(), "Couldn't find latest release, please wait 1 hour and try again", "An Error has Occured", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -96,7 +97,15 @@ public class Main {
                     AbstractTask task = targetClass.getConstructor().newInstance();
                     ui.updateStep(task.getTaskID());
                     System.out.print(task.getTaskID() + "(" + Arrays.toString(cmdArgs) + ")");
-                    System.out.println(" => " + task.runTask(cmdArgs, environment));
+                    try {
+                        boolean taskResult = task.runTask(cmdArgs, environment);
+                        System.out.println(" => " + taskResult);
+                        if (!taskResult) {
+                            JOptionPane.showMessageDialog(UpdateUI.getInstanceComponent(), "An update task has failed.\nThe updater will now close", "An Error has Occurred", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Throwable t) {
+                        task.reportError(t, new File(workingDirectory));
+                    }
                     ui.incrementStep();
                 } else {
                     System.err.println("Couldn't find class for task \"" + cmdArgs[0] + "\"");
