@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'edu.sc.seis.launch4j' version '2.4.9'
 }
 
 group 'com.amulet_editor'
@@ -31,5 +32,9 @@ jar {
 }
 
 application {
+    mainClassName = 'com.amulet_editor.amulet_updater.Main'
+}
+
+launch4j {
     mainClassName = 'com.amulet_editor.amulet_updater.Main'
 }

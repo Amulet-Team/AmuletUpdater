@@ -83,6 +83,7 @@ public class UpdateUI implements ActionListener {
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.pack();
 
+        this.frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
