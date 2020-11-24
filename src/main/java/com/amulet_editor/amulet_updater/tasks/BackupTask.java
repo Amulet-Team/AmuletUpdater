@@ -19,7 +19,8 @@ public class BackupTask extends AbstractTask {
 
     private static final List<String> ignoreFiles = Arrays.asList(
             "updater.jar",
-            "backups"
+            "backups",
+            "updater-tmp"
     );
 
     private static class BackupFileFilter implements FileFilter {
@@ -54,7 +55,9 @@ public class BackupTask extends AbstractTask {
 
             try {
                 for (File f : Objects.requireNonNull(workingDirectory.listFiles())) {
-                    FileUtilities.delete(f);
+                    if (filter.accept(f)) {
+                        FileUtilities.delete(f);
+                    }
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();

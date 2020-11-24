@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.amulet_editor'
-version '5.0'
+version '6.0'
 
 repositories {
     mavenCentral()
@@ -37,4 +37,5 @@ application {
 
 launch4j {
     mainClassName = 'com.amulet_editor.amulet_updater.Main'
+    bundledJrePath = 'openjdk-14.0.2'
 }

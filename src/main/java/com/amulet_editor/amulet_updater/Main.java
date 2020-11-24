@@ -79,6 +79,10 @@ public class Main {
             return;
         }
 
+        if (releaseInfo.releaseVersion.equals(currentVersion)) {
+            return;
+        }
+
         environment.put(Constants.TARGET_VERSION_INFO, releaseInfo);
 
         if (sPid != null) {
@@ -102,6 +106,7 @@ public class Main {
                         System.out.println(" => " + taskResult);
                         if (!taskResult) {
                             JOptionPane.showMessageDialog(UpdateUI.getInstanceComponent(), "An update task has failed.\nThe updater will now close", "An Error has Occurred", JOptionPane.ERROR_MESSAGE);
+                            System.exit(0);
                         }
                     } catch (Throwable t) {
                         task.reportError(t, new File(workingDirectory));

@@ -4,7 +4,9 @@ import com.amulet_editor.amulet_updater.ui.UpdateUI;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -18,14 +20,18 @@ public abstract class AbstractTask {
 
     public void reportError(Throwable e, File workingDirectory) {
         File logFile = Paths.get(workingDirectory.getAbsolutePath(), "updater.log").toFile();
+        StringWriter sw = new StringWriter();
         String errorLog = null;
         try {
-            PrintStream pw = new PrintStream(logFile);
+            PrintWriter pw = new PrintWriter(sw);
             pw.println("=== Exception while executing " + this.getTaskID() + " ===");
             pw.println();
             e.printStackTrace(pw);
-            errorLog = pw.toString();
+            pw.flush();
+            errorLog = sw.toString();
             pw.close();
+
+            Files.write(logFile.toPath(), errorLog.getBytes());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -11,15 +11,17 @@ public class RestartTask extends AbstractTask {
 
     private static class AmuletRunnable implements Runnable {
         private final String path;
+        private final File workingDirectory;
 
-        AmuletRunnable(String path) {
+        AmuletRunnable(String path, File workingDirectory) {
             this.path = path;
+            this.workingDirectory = workingDirectory;
         }
 
         @Override
         public void run() {
             try {
-                Runtime.getRuntime().exec(path);
+                Runtime.getRuntime().exec(path, null, this.workingDirectory);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -32,7 +34,7 @@ public class RestartTask extends AbstractTask {
 
         String amuletPath = Paths.get(workingDirectory.toString(), args[1]).toString();
 
-        Thread t = new Thread(new AmuletRunnable(amuletPath));
+        Thread t = new Thread(new AmuletRunnable(amuletPath, workingDirectory));
         t.start();
         environment.put("amulet_thread", t);
         return true;
