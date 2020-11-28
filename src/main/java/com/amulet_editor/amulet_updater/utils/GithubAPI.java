@@ -14,7 +14,7 @@ public class GithubAPI {
     private static final Github github = new RtGithub();
 
     public static void main(String[] args) throws MalformedURLException {
-        ReleaseInfo info = getLatestRelease(false);
+        ReleaseInfo info = getLatestRelease(false, null);
         assert info != null;
         System.out.println(info.releaseVersion + " -> " + info.parseUrl(info.getReleaseAsset()));
     }
@@ -60,7 +60,7 @@ public class GithubAPI {
         }
     }
 
-    public static ReleaseInfo getLatestRelease(boolean includeBetas) {
+    public static ReleaseInfo getLatestRelease(boolean includeBetas, String targetVersion) {
         try {
             Repo repo = github.repos().get(
                     new Coordinates.Simple("Amulet-Team/Amulet-Map-Editor")
@@ -75,7 +75,11 @@ public class GithubAPI {
                 }
 
                 if (!latestRelease.draft()) {
-                    break;
+                    if (targetVersion == null) {
+                        break;
+                    } else if (targetVersion.equals(latestRelease.tag())) {
+                        break;
+                    }
                 }
             }
             if (latestRelease != null) {

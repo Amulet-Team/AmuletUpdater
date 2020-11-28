@@ -45,11 +45,13 @@ public class Main {
         options.addOption("pid", true, "The PID to kill");
         options.addOption("install_beta", "Switch to install the beta version");
         options.addOption("current_version", true, "The currently installed version");
+        options.addOption("target_version",true, "The target version to update to");
 
         CommandLineParser parser = new DefaultParser();
 
         String workingDirectory = null;
         String currentVersion = null;
+        String targetVersion = null;
         boolean installBeta = false;
         String sPid = null;
 
@@ -60,6 +62,9 @@ public class Main {
             installBeta = cli.hasOption("install_beta");
             if (cli.hasOption("pid")) {
                 sPid = cli.getOptionValue("pid");
+            }
+            if (cli.hasOption("target_version")) {
+                targetVersion = cli.getOptionValue("target_version");
             }
         } catch (ParseException exp) {
             exp.printStackTrace();
@@ -73,7 +78,7 @@ public class Main {
         environment.put(Constants.WORKING_DIRECTORY, new File(workingDirectory));
         environment.put(Constants.CURRENT_VERSION, currentVersion);
 
-        GithubAPI.ReleaseInfo releaseInfo = GithubAPI.getLatestRelease(installBeta);
+        GithubAPI.ReleaseInfo releaseInfo = GithubAPI.getLatestRelease(installBeta, targetVersion);
         if (releaseInfo == null) {
             JOptionPane.showMessageDialog(UpdateUI.getInstanceComponent(), "Couldn't find latest release, please wait 1 hour and try again", "An Error has Occured", JOptionPane.ERROR_MESSAGE);
             return;
