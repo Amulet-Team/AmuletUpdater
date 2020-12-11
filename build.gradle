@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.amulet_editor'
-version '6.0'
+version '7.1'
 
 repositories {
     mavenCentral()
